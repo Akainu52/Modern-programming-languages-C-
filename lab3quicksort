@@ -1,0 +1,103 @@
+#include <iostream>
+#include <utility>
+#include <vector>
+
+void printArray(const std::vector<int>& values, const char* title) {
+    std::cout << title;
+    for (int value : values) {
+        std::cout << value << ' ';
+    }
+    std::cout << '\n';
+}
+
+bool ascending(int a, int b) {
+    return a < b;
+}
+
+bool descending(int a, int b) {
+    return a > b;
+}
+
+bool evenAscendingOddDescending(int a, int b) {
+    const bool aEven = (a % 2 == 0);
+    const bool bEven = (b % 2 == 0);
+
+    if (aEven != bEven) {
+        return aEven && !bEven;
+    }
+    if (aEven) {
+        return a < b;
+    }
+    return a > b;
+}
+
+template <typename Compare>
+int partitionRange(std::vector<int>& values, int left, int right, Compare shouldComeBefore) {
+    const int pivot = values[left + (right - left) / 2];
+    int i = left;
+    int j = right;
+
+    while (i <= j) {
+        while (shouldComeBefore(values[i], pivot)) {
+            ++i;
+        }
+        while (shouldComeBefore(pivot, values[j])) {
+            --j;
+        }
+        if (i <= j) {
+            std::swap(values[i], values[j]);
+            ++i;
+            --j;
+        }
+    }
+
+    return i;
+}
+
+template <typename Compare>
+void quickSortRange(std::vector<int>& values, int left, int right, Compare shouldComeBefore) {
+    if (left >= right) {
+        return;
+    }
+
+    const int split = partitionRange(values, left, right, shouldComeBefore);
+    if (left < split - 1) {
+        quickSortRange(values, left, split - 1, shouldComeBefore);
+    }
+    if (split < right) {
+        quickSortRange(values, split, right, shouldComeBefore);
+    }
+}
+
+int main() {
+    const std::vector<int> source = { 2, 5, -8, 1, -4, 6, 3, -5, -9, 13, 0, 4, 9 };
+    const int n = static_cast<int>(source.size());
+
+    printArray(source, "Initial array: ");
+
+    std::vector<int> fullAsc = source;
+    quickSortRange(fullAsc, 0, n - 1, ascending);
+    printArray(fullAsc, "2) Quick sort ascending: ");
+
+    std::vector<int> oddEven = source;
+    quickSortRange(oddEven, 0, n - 1, evenAscendingOddDescending);
+    printArray(oddEven, "3) Even ascending, odd descending: ");
+
+    int n1 = 0;
+    int n2 = 0;
+    std::cout << "Enter N1 and N2 (0.." << n - 1 << "): ";
+    if (!(std::cin >> n1 >> n2) || n1 < 0 || n2 >= n || n1 > n2) {
+        std::cout << "Invalid index range.\n";
+        return 1;
+    }
+
+    std::vector<int> rangeAsc = source;
+    quickSortRange(rangeAsc, n1, n2, ascending);
+    printArray(rangeAsc, "4) Ascending on [N1..N2]: ");
+
+    std::vector<int> rangeDesc = source;
+    quickSortRange(rangeDesc, n1, n2, descending);
+    printArray(rangeDesc, "5) Descending on [N1..N2]: ");
+
+    return 0;
+}

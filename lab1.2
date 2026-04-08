@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+#define PR_INT(x)    printf("x=%p, *x=%d, &x=%p\n", (void*)(x), *(x), (void*)&(x))
+#define PR_DOUBLE(x) printf("x=%p, *x=%.2f, &x=%p\n", (void*)(x), *(x), (void*)&(x))
+#define PR_CHAR(x)   printf("x=%p, *x='%c' (%d), &x=%p\n", (void*)(x), *(x), (int)*(x), (void*)&(x))
+
+void experiment_int(void) {
+    int mas[] = { 100, 200, 300 };
+    int* ptr1 = mas;
+    int* ptr2 = &mas[2];
+
+    printf("int:\n");
+    PR_INT(ptr1);
+    ptr1++;
+    PR_INT(ptr1);
+    PR_INT(ptr2);
+    ++ptr2;
+    printf("ptr2-ptr1=%td\n\n", ptr2 - ptr1);
+}
+
+void experiment_double(void) {
+    double mas[] = { 1.1, 2.2, 3.1 };
+    double* ptr1 = mas;
+    double* ptr2 = &mas[2];
+
+    printf("double:\n");
+    PR_DOUBLE(ptr1);
+    ptr1++;
+    PR_DOUBLE(ptr1);
+    PR_DOUBLE(ptr2);
+    ++ptr2;
+    printf("ptr2-ptr1=%td\n\n", ptr2 - ptr1);
+}
+
+void experiment_char(void) {
+    char mas[] = { 'A', 'B', 'C' };
+    char* ptr1 = mas;
+    char* ptr2 = &mas[2];
+
+    printf("char:\n");
+    PR_CHAR(ptr1);
+    ptr1++;
+    PR_CHAR(ptr1);
+    PR_CHAR(ptr2);
+    ++ptr2;
+    printf("ptr2-ptr1=%td\n\n", ptr2 - ptr1);
+}
+
+int main(void) {
+    experiment_int();
+    experiment_double();
+    experiment_char();
+    return 0;
+}

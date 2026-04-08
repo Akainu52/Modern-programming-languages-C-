@@ -1,0 +1,78 @@
+#include <iostream>
+
+int dlina1(const char* str);
+int dlina2(const char* str);
+int dlina3(const char* str);
+void kopir(const char* source, char* destination);
+int sravn(const char* left, const char* right);
+void konkat(char* destination, const char* source);
+
+int main() {
+    char lines[4][64] = {
+        "qwerty",
+        "1234567890",
+        "hello",
+        "world"
+    };
+
+    std::cout << "Array of strings:\n";
+    for (int i = 0; i < 4; ++i) {
+        std::cout << "lines[" << i << "] = " << lines[i] << '\n';
+        std::cout << "  lengths: " << dlina1(lines[i]) << ", " << dlina2(lines[i]) << ", " << dlina3(lines[i]) << '\n';
+    }
+
+    kopir(lines[0], lines[1]);
+    std::cout << "\nAfter copy lines[0] -> lines[1]:\n";
+    std::cout << "lines[0] = " << lines[0] << ", lines[1] = " << lines[1] << '\n';
+
+    const int cmp = sravn(lines[2], lines[3]);
+    std::cout << "Compare lines[2] and lines[3]: " << cmp << '\n';
+
+    char merged[128] = "";
+    kopir(lines[2], merged);
+    konkat(merged, lines[3]);
+    std::cout << "Concatenation of lines[2] and lines[3]: " << merged << '\n';
+
+    return 0;
+}
+
+int dlina1(const char* str) {
+    int len = 0;
+    while (str[len] != '\0') {
+        ++len;
+    }
+    return len;
+}
+
+int dlina2(const char* str) {
+    const char* p = str;
+    while (*p != '\0') {
+        ++p;
+    }
+    return static_cast<int>(p - str);
+}
+
+int dlina3(const char* str) {
+    return (*str == '\0') ? 0 : 1 + dlina3(str + 1);
+}
+
+void kopir(const char* source, char* destination) {
+    while ((*destination++ = *source++) != '\0') {
+    }
+}
+
+int sravn(const char* left, const char* right) {
+    while (*left != '\0' && *left == *right) {
+        ++left;
+        ++right;
+    }
+    return static_cast<unsigned char>(*left) - static_cast<unsigned char>(*right);
+}
+
+void konkat(char* destination, const char* source) {
+    while (*destination != '\0') {
+        ++destination;
+    }
+    while ((*destination++ = *source++) != '\0') {
+    }
+}

@@ -1,0 +1,30 @@
+#include <cstring>
+#include <iostream>
+
+int main() {
+    char str1[64] = "Hello, ";
+    char str2[64] = "World!";
+    char str3[64] = "";
+
+    std::strcpy(str3, str1);
+    std::strcat(str1, str2);
+
+    std::cout << "After strcpy(str3, str1): str3 = " << str3 << '\n';
+    std::cout << "After strcat(str1, str2): str1 = " << str1 << '\n';
+
+    std::cout << "strlen(str1) = " << std::strlen(str1) << '\n';
+    std::cout << "strlen(str2) = " << std::strlen(str2) << '\n';
+
+    const int cmp = std::strcmp(str1, str2);
+    std::cout << "strcmp(str1, str2) = " << cmp << '\n';
+
+    if (cmp == 0) {
+        std::cout << "Strings are equal\n";
+    } else if (cmp < 0) {
+        std::cout << "str1 is less than str2\n";
+    } else {
+        std::cout << "str1 is greater than str2\n";
+    }
+
+    return 0;
+}

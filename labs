@@ -1,0 +1,25 @@
+#include <iostream>
+
+int power(int, int);
+
+int main() {
+    int i, k, x;
+    //Добавляем ввод степени
+    std::cout << "Enter base: ";
+    std::cin >> x;
+
+    for (i = 0; i < x; i++) {
+        k = power(x, i);
+        std::cout << "i = " << i << ", k = " << k << std::endl;
+    }
+
+    return 0;
+}
+
+int power(int x, int n) {
+    int i, p = 1;
+    for (i = 0; i < n; i++) {
+        p *= x;
+    }
+    return p;
+}

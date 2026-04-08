@@ -1,0 +1,48 @@
+#include <algorithm>
+#include <cstddef>
+#include <iomanip>
+#include <iostream>
+
+class Money {
+    long dollars;
+    int cents;
+
+public:
+    Money() : dollars(0), cents(0) {}
+
+    Money(long d, int c) : dollars(d), cents(c) {}
+
+    bool operator>(const Money& amt) const {
+        return (dollars > amt.dollars) ||
+               ((dollars == amt.dollars) && (cents > amt.cents));
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Money& amt) {
+        os << "$" << amt.dollars << '.'
+           << std::setw(2) << std::setfill('0') << amt.cents;
+        return os;
+    }
+};
+
+template <typename T, std::size_t N>
+void Sort(T (&arr)[N]) {
+    std::sort(arr, arr + N, [](const T& a, const T& b) { return b > a; });
+}
+
+int main() {
+    Money mas[] = {
+        Money(19, 10),
+        Money(99, 99),
+        Money(99, 95),
+        Money(19, 95)
+    };
+
+    Sort(mas);
+
+    const std::size_t n = sizeof(mas) / sizeof(mas[0]);
+    for (std::size_t i = 0; i < n; ++i) {
+        std::cout << "mas[" << i << "] = " << mas[i] << '\n';
+    }
+
+    return 0;
+}

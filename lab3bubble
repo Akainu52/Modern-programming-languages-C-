@@ -1,0 +1,76 @@
+#include <iostream>
+#include <utility>
+#include <vector>
+
+void printArray(const std::vector<int>& values, const char* title) {
+    std::cout << title;
+    for (int value : values) {
+        std::cout << value << ' ';
+    }
+    std::cout << '\n';
+}
+
+bool ascending(int a, int b) {
+    return a < b;
+}
+
+bool descending(int a, int b) {
+    return a > b;
+}
+
+bool evenAscendingOddDescending(int a, int b) {
+    const bool aEven = (a % 2 == 0);
+    const bool bEven = (b % 2 == 0);
+
+    if (aEven != bEven) {
+        return aEven && !bEven;
+    }
+    if (aEven) {
+        return a < b;
+    }
+    return a > b;
+}
+
+template <typename Compare>
+void bubbleSortRange(std::vector<int>& values, int left, int right, Compare shouldComeBefore) {
+    for (int i = left; i < right; ++i) {
+        for (int j = left; j < right - (i - left); ++j) {
+            if (shouldComeBefore(values[j + 1], values[j])) {
+                std::swap(values[j], values[j + 1]);
+            }
+        }
+    }
+}
+
+int main() {
+    const std::vector<int> source = { 2, 5, -8, 1, -4, 6, 3, -5, -9, 13, 0, 4, 9 };
+    const int n = static_cast<int>(source.size());
+
+    printArray(source, "Initial array: ");
+
+    std::vector<int> fullAsc = source;
+    bubbleSortRange(fullAsc, 0, n - 1, ascending);
+    printArray(fullAsc, "2) Bubble sort ascending: ");
+
+    std::vector<int> oddEven = source;
+    bubbleSortRange(oddEven, 0, n - 1, evenAscendingOddDescending);
+    printArray(oddEven, "3) Even ascending, odd descending: ");
+
+    int n1 = 0;
+    int n2 = 0;
+    std::cout << "Enter N1 and N2 (0.." << n - 1 << "): ";
+    if (!(std::cin >> n1 >> n2) || n1 < 0 || n2 >= n || n1 > n2) {
+        std::cout << "Invalid index range.\n";
+        return 1;
+    }
+
+    std::vector<int> rangeAsc = source;
+    bubbleSortRange(rangeAsc, n1, n2, ascending);
+    printArray(rangeAsc, "4) Ascending on [N1..N2]: ");
+
+    std::vector<int> rangeDesc = source;
+    bubbleSortRange(rangeDesc, n1, n2, descending);
+    printArray(rangeDesc, "5) Descending on [N1..N2]: ");
+
+    return 0;
+}

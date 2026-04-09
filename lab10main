@@ -1,0 +1,212 @@
+#include <iostream>
+#include <limits>
+#include <string>
+
+#include "LinkedList.h"
+
+struct Bus {
+    int number = 0;
+    std::string driver;
+    int route = 0;
+
+    static Bus byNumber(int busNumber) {
+        Bus key;
+        key.number = busNumber;
+        return key;
+    }
+
+    friend bool operator==(const Bus& lhs, const Bus& rhs) {
+        return lhs.number == rhs.number;
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const Bus& bus) {
+        out << "  Bus #" << bus.number
+            << ", driver: " << bus.driver
+            << ", route: " << bus.route;
+        return out;
+    }
+};
+
+class BusPark {
+private:
+    LinkedList<Bus> busesInPark_;
+    LinkedList<Bus> busesOnRoute_;
+
+public:
+    void clear() {
+        busesInPark_.clear();
+        busesOnRoute_.clear();
+    }
+
+    bool addToPark(const Bus& bus) {
+        if (contains(bus.number)) {
+            return false;
+        }
+        busesInPark_.pushBack(bus);
+        return true;
+    }
+
+    bool leavePark(int busNumber) {
+        Bus movedBus;
+        if (!busesInPark_.extractFirst(Bus::byNumber(busNumber), movedBus)) {
+            return false;
+        }
+        busesOnRoute_.pushBack(movedBus);
+        return true;
+    }
+
+    bool enterPark(int busNumber) {
+        Bus movedBus;
+        if (!busesOnRoute_.extractFirst(Bus::byNumber(busNumber), movedBus)) {
+            return false;
+        }
+        busesInPark_.pushBack(movedBus);
+        return true;
+    }
+
+    void printInPark() const {
+        std::cout << "\nBuses in park:\n";
+        printList(busesInPark_);
+    }
+
+    void printOnRoute() const {
+        std::cout << "\nBuses on route:\n";
+        printList(busesOnRoute_);
+    }
+
+private:
+    bool contains(int busNumber) const {
+        return busesInPark_.find(Bus::byNumber(busNumber)) != nullptr
+            || busesOnRoute_.find(Bus::byNumber(busNumber)) != nullptr;
+    }
+
+    static void printList(const LinkedList<Bus>& list) {
+        if (list.empty()) {
+            std::cout << "  List is empty.\n";
+            return;
+        }
+
+        list.forEach([](const Bus& bus) {
+            std::cout << bus << '\n';
+        });
+    }
+};
+
+int readInt(const std::string& prompt) {
+    while (true) {
+        std::cout << prompt;
+        int value = 0;
+        if (std::cin >> value) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return value;
+        }
+
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Input error. Enter an integer.\n";
+    }
+}
+
+std::string readLine(const std::string& prompt) {
+    std::cout << prompt;
+    std::string value;
+    std::getline(std::cin, value);
+    return value;
+}
+
+void fillInitialData(BusPark& park) {
+    park.clear();
+
+    int count = readInt("How many buses to add to the park: ");
+    if (count < 0) {
+        count = 0;
+    }
+
+    for (int i = 1; i <= count; ++i) {
+        std::cout << "\nBus " << i << ":\n";
+        int number = readInt("  Bus number: ");
+        std::string driver = readLine("  Driver surname and initials: ");
+        int route = readInt("  Route number: ");
+
+        Bus bus;
+        bus.number = number;
+        bus.driver = driver;
+        bus.route = route;
+
+        if (!park.addToPark(bus)) {
+            std::cout << "  Bus #" << number
+                << " already exists. Repeat this bus input.\n";
+            --i;
+        }
+    }
+
+    std::cout << "\nInitial data creation completed.\n";
+}
+
+void printMenu() {
+    std::cout << "\n===== Bus Park Menu =====\n"
+        << "1. Initial creation of bus list in park\n"
+        << "2. Bus leaves park\n"
+        << "3. Bus enters park\n"
+        << "4. Show buses in park\n"
+        << "5. Show buses on route\n"
+        << "6. Show both lists\n"
+        << "0. Exit\n";
+}
+
+int main() {
+    BusPark park;
+
+    while (true) {
+        printMenu();
+        int choice = readInt("Choose action: ");
+
+        if (choice == 0) {
+            std::cout << "Program finished.\n";
+            break;
+        }
+
+        switch (choice) {
+        case 1: {
+            fillInitialData(park);
+            park.printInPark();
+            break;
+        }
+        case 2: {
+            int busNumber = readInt("Enter bus number for leaving park: ");
+            if (park.leavePark(busNumber)) {
+                std::cout << "Bus #" << busNumber << " moved to route list.\n";
+            }
+            else {
+                std::cout << "Bus #" << busNumber << " was not found in park list.\n";
+            }
+            break;
+        }
+        case 3: {
+            int busNumber = readInt("Enter bus number for entering park: ");
+            if (park.enterPark(busNumber)) {
+                std::cout << "Bus #" << busNumber << " moved back to park list.\n";
+            }
+            else {
+                std::cout << "Bus #" << busNumber << " was not found in route list.\n";
+            }
+            break;
+        }
+        case 4:
+            park.printInPark();
+            break;
+        case 5:
+            park.printOnRoute();
+            break;
+        case 6:
+            park.printInPark();
+            park.printOnRoute();
+            break;
+        default:
+            std::cout << "Unknown menu item. Try again.\n";
+            break;
+        }
+    }
+
+    return 0;
+}

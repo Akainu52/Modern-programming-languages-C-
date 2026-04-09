@@ -1,0 +1,79 @@
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+
+template <class T>
+class TStack {
+private:
+    std::size_t capacity;
+    std::size_t numItem;
+    T* item;
+
+public:
+    explicit TStack(std::size_t size = 10) : capacity(size), numItem(0), item(new T[size]) {}
+
+    ~TStack() {
+        delete[] item;
+    }
+
+    void push(const T& value) {
+        if (numItem >= capacity) {
+            throw std::runtime_error("Stack overflow");
+        }
+        item[numItem++] = value;
+    }
+
+    T pop() {
+        if (isEmpty()) {
+            throw std::runtime_error("Stack underflow");
+        }
+        return item[--numItem];
+    }
+
+    T top() const {
+        if (isEmpty()) {
+            throw std::runtime_error("Stack is empty");
+        }
+        return item[numItem - 1];
+    }
+
+    bool isEmpty() const {
+        return numItem == 0;
+    }
+};
+
+int main() {
+    std::size_t n = 0;
+    std::cin >> n;
+
+    std::vector<int> input(n);
+    for (std::size_t i = 0; i < n; ++i) {
+        std::cin >> input[i];
+    }
+
+    TStack<int> deadEnd(n == 0 ? 1 : n);
+    std::vector<int> output;
+    output.reserve(n);
+
+    for (int current : input) {
+        while (!deadEnd.isEmpty() && deadEnd.top() > current) {
+            output.push_back(deadEnd.pop());
+        }
+        deadEnd.push(current);
+    }
+
+    while (!deadEnd.isEmpty()) {
+        output.push_back(deadEnd.pop());
+    }
+
+    for (std::size_t i = 0; i < output.size(); ++i) {
+        if (i > 0) {
+            std::cout << ' ';
+        }
+        std::cout << output[i];
+    }
+    std::cout << '\n';
+
+    return 0;
+}
+//Ввод сделан с клавиатуры: сначала количество чисел, затем числа через Enter.
